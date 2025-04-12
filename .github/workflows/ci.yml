@@ -1,0 +1,41 @@
+name: "Python test run"
+run-name: "Python test run"
+
+on:
+    push:
+        branches:
+            - main
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: "Checkout branch"
+              uses: actions/checkout@v4
+
+            - name: "Setup python"
+              uses: actions/setup-python@v5
+              with:
+                python-version: '3.8'
+
+            - name: Install dependencies
+              run: | 
+                python --version
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt
+
+            - name: Run tests
+              run: |
+                pytest test_app.py
+
+
+    approve-deploy:
+        needs: test
+        runs-on: ubuntu-latest
+        environment:
+            name: production
+            url: https://example.com
+
+        steps:
+            - name: wait for manual approval
+              run: echo "Ready for deployment"
